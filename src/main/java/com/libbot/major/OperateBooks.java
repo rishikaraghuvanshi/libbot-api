@@ -98,6 +98,7 @@ public class OperateBooks {
 	        rs = s.executeQuery(query);
 	        while(rs.next())
 	        {
+	        	book=new BookBean();
 	        	book.setAuthor(author);
 	        	book.setBook_name(bookName);
 	        	book.setBook_id(rs.getString(1));
