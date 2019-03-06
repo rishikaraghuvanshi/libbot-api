@@ -12,6 +12,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import beans.BookBean;
 import beans.UserBean;
@@ -76,6 +77,34 @@ public class OperateBooks {
             	books.add(book);
             }
             con.close();
+		}
+		catch(Exception e)
+		{}
+		return books;
+	}
+	
+	@GET
+	@Path("search/")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<BookBean> searchBooks(@QueryParam("bookName") String bookName, @QueryParam("author") String author)
+	{
+		ArrayList<BookBean> books=new ArrayList<>();
+		BookBean book=null;
+		try
+		{
+			con = DriverManager.getConnection(dbUrl, props);
+	        s = con.createStatement(); 
+	        String query = "select * from books where name='"+bookName+"' and author='"+author+"';";
+	        rs = s.executeQuery(query);
+	        while(rs.next())
+	        {
+	        	book.setAuthor(author);
+	        	book.setBook_name(bookName);
+	        	book.setBook_id(rs.getString(1));
+	        	book.setGenre(rs.getString(4));
+            	book.setCopies(rs.getInt(5));
+            	books.add(book);
+	        }
 		}
 		catch(Exception e)
 		{}
