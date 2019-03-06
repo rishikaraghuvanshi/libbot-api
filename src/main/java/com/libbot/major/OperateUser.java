@@ -33,8 +33,8 @@ public class OperateUser {
 		super();
 		try
 		 {
-			
 			 dbUri = new URI("postgres://tzczhqfnqssqyk:9ca0c628a0453a959e1a98f26365cbfe9f8a67290eab40ec41e78580c5df5ec9@ec2-54-163-234-88.compute-1.amazonaws.com:5432/d5agkiio1i15o9");
+
 			 Class.forName("org.postgresql.Driver");
 			  username = dbUri.getUserInfo().split(":")[0];
 	          password = dbUri.getUserInfo().split(":")[1];

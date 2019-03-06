@@ -13,7 +13,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
 import beans.BookBean;
 import beans.UserBean;
 
@@ -34,8 +33,9 @@ public class OperateBooks {
 		
 		try
 		 {
-			
 			 dbUri = new URI("postgres://tzczhqfnqssqyk:9ca0c628a0453a959e1a98f26365cbfe9f8a67290eab40ec41e78580c5df5ec9@ec2-54-163-234-88.compute-1.amazonaws.com:5432/d5agkiio1i15o9");
+
+			 
 			 Class.forName("org.postgresql.Driver");
 			  username = dbUri.getUserInfo().split(":")[0];
 	          password = dbUri.getUserInfo().split(":")[1];
