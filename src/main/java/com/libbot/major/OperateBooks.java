@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import beans.BookBean;
+import beans.ResponseBean;
 import beans.UserBean;
 
 @Path("books")
@@ -84,7 +85,7 @@ public class OperateBooks {
 	}
 	
 	@GET
-	@Path("search/")
+	@Path("search")
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<BookBean> searchBooks(@QueryParam("bookName") String bookName, @QueryParam("author") String author)
 	{
@@ -110,6 +111,57 @@ public class OperateBooks {
 		catch(Exception e)
 		{}
 		return books;
+	}
+	@GET
+	@Path("issue")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ResponseBean issueBook(@QueryParam("id") String id, @QueryParam("username") String username)
+	{
+		ResponseBean res=new ResponseBean();
+		try
+		{
+			con = DriverManager.getConnection(dbUrl, props);
+			con.setAutoCommit(false);
+	        s = con.createStatement(); 
+	        String query = "select * from books where book_id='"+id+"';";
+	        rs = s.executeQuery(query);
+	        if(rs.next())
+	        {
+	        	if(rs.getInt(5)==0)
+	        	{
+	        		res.setMessage("Ooops..! Book unavailabe. Please try later");
+	        		res.setStatus(400);
+	        		con.close();
+	        		return res;
+	        	}
+	        	query="update books set copies="+ String.valueOf(rs.getInt(5)-1)+" where book_id='"+id+"';";
+	        	int a=s.executeUpdate(query);
+	        	if(a==0 || a==-1)
+	        	{
+	        		res.setMessage("Incorrect input");
+	        		res.setStatus(400);
+	        		con.close();
+	        		return res;
+	        	}
+	        	res.setMessage("Book issued. Please checkout at LRC gate");
+	        	res.setStatus(200);
+	        	con.commit();
+	        	con.close();
+	        	return res;
+	        }
+	        else
+	        {
+	        	res.setMessage("Book not found");
+	        	res.setStatus(400);
+	        	con.commit();
+	    		con.close();
+	        }
+		}
+		catch(Exception e)
+		{}
+		
+		return res;
+		
 	}
 
 }
