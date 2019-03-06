@@ -1,0 +1,1 @@
+web: java -cp target/classes:target/dependency/* com.libbot.major.heroku.Main
