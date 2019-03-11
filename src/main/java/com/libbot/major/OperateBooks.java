@@ -5,7 +5,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.ws.rs.GET;
@@ -143,7 +147,20 @@ public class OperateBooks {
 	        		con.close();
 	        		return res;
 	        	}
-	        	res.setMessage("Book issued. Please checkout at LRC gate");
+	        	Calendar cal = Calendar.getInstance();
+	        	String from= cal.getTime().toString();
+	        	cal.add(Calendar.DATE, 15);
+	        	String to= cal.getTime().toString();
+	        	query="insert into issue_books values(default,'"+from+"','"+to+"',"+String.valueOf(id)+",'"+username+"');";
+	        	a=s.executeUpdate(query);
+	        	if(a==0 || a==-1)
+	        	{
+	        		res.setMessage("Error issuing book");
+	        		res.setStatus(400);
+	        		con.close();
+	        		return res;
+	        	}
+	        	res.setMessage("Book issued with details- Issue date:"+from+" Return date:"+to +" Please checkout at LRC gate");
 	        	res.setStatus(200);
 	        	con.commit();
 	        	con.close();
