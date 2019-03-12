@@ -110,10 +110,13 @@ public class OperateBooks {
 	        	book.setGenre(rs.getString(4));
             	book.setCopies(rs.getInt(5));
             	books.add(book);
+            	con.close();
 	        }
 		}
 		catch(Exception e)
-		{}
+		{
+			return null;
+		}
 		return books;
 	}
 	@GET
