@@ -348,7 +348,7 @@ public class OperateBooks {
 	@Path("returnBooks")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public ResponseBean returnBookDetails(ArrayList<ReturnBean> books, @QueryParam("username") String username)
+	public ResponseBean returnBook(ArrayList<ReturnBean> books, @QueryParam("username") String username)
 	{
 		ResponseBean res=new ResponseBean();
 		try {
