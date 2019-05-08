@@ -154,7 +154,7 @@ public class OperateBooks {
 	        	String from= cal.getTime().toString();
 	        	cal.add(Calendar.DATE, 15);
 	        	String to= cal.getTime().toString();
-	        	query="insert into issue_books values(default,'"+from+"','"+to+"',"+String.valueOf(id)+",'"+username+"');";
+	        	query="insert into issue_books values(default,'"+from+"','"+to+"',"+String.valueOf(id)+",'"+username+"',0);";
 	        	a=s.executeUpdate(query);
 	        	if(a==0 || a==-1)
 	        	{
@@ -182,6 +182,55 @@ public class OperateBooks {
 		
 		return res;
 		
+	}
+	
+	
+	@GET
+	@Path("getCheckout")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<BookBean> checkout( @QueryParam("username") String username)
+	{
+		ArrayList<BookBean> res=new ArrayList<>();
+		try {
+			
+			con = DriverManager.getConnection(dbUrl, props);
+	        s = con.createStatement(); 
+	        Calendar cal = Calendar.getInstance();
+        	String from= cal.getTime().toString();
+        	
+        	 String query = "select book_id from issue_books where username='"+username+"'and from_date='"+from+"' and checkout=0;";
+        	 rs=s.executeQuery(query );
+        	 
+        	 while(rs.next())
+        	 {
+        		 BookBean book = new BookBean();
+        		 book.setBook_id(String.valueOf(rs.getInt(1)));
+        		 res.add(book);
+        	 }
+        	 
+        	 for(int i=0;i<res.size();i++)
+        	 {
+        		 String id =res.get(i).getBook_id();
+        		 query="select name,author,genre from books where book_id='"+id+"';";
+        		 rs=s.executeQuery(query);
+        		 if(rs.next())
+        		 {
+        			 res.get(i).setBook_name(rs.getString(1));
+        			 res.get(i).setAuthor(rs.getString(2));
+        			 res.get(i).setGenre(rs.getString(3));
+        		 }
+        		 else {
+        			 con.close();
+        			 return null;
+        		 }
+        	 }
+        	 
+        	 con.close();
+        	
+		}catch(Exception e)
+		{}
+	
+		return res;
 	}
 
 }
