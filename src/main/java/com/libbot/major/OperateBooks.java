@@ -206,7 +206,7 @@ public class OperateBooks {
 	        Calendar cal = Calendar.getInstance();
         	cal.setTime(new Date());
         	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
-        	String from = dateFormat.format(cal);
+        	String from = dateFormat.format(cal.getTime());
         	 String query = "select book_id from issue_books where username='"+username+"'and from_date='"+from+"' and checkout=0;";
         	 rs=s.executeQuery(query );
         	 
