@@ -6,12 +6,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -20,6 +22,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import beans.BookBean;
 import beans.ResponseBean;
+import beans.ReturnBean;
 import beans.UserBean;
 
 @Path("books")
@@ -150,11 +153,14 @@ public class OperateBooks {
 	        		con.close();
 	        		return res;
 	        	}
-	        	Calendar cal = Calendar.getInstance();
-	        	String from= cal.getTime().toString();
-	        	cal.add(Calendar.DATE, 15);
-	        	String to= cal.getTime().toString();
-	        	query="insert into issue_books values(default,'"+from+"','"+to+"',"+String.valueOf(id)+",'"+username+"',0);";
+	        	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
+	    		Date date = new Date();
+	    		Calendar to = Calendar.getInstance();
+	    		Calendar from = Calendar.getInstance();
+	        	to.setTime(date);
+	        	to.add(Calendar.DATE, 15);
+	        	query="insert into issue_books values(default,'"+dateFormat.format(from.getTime())+"','"
+	        			+dateFormat.format(to.getTime())+ "',"+String.valueOf(id)+",'"+username+"',0,0);";
 	        	a=s.executeUpdate(query);
 	        	if(a==0 || a==-1)
 	        	{
@@ -188,7 +194,7 @@ public class OperateBooks {
 	@GET
 	@Path("getCheckout")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<BookBean> checkout( @QueryParam("username") String username)
+	public ArrayList<BookBean> getCheckout( @QueryParam("username") String username)
 	{
 		ArrayList<BookBean> res=new ArrayList<>();
 		try {
@@ -196,8 +202,9 @@ public class OperateBooks {
 			con = DriverManager.getConnection(dbUrl, props);
 	        s = con.createStatement(); 
 	        Calendar cal = Calendar.getInstance();
-        	String from= cal.getTime().toString();
-        	
+        	cal.setTime(new Date());
+        	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
+        	String from = dateFormat.format(cal);
         	 String query = "select book_id from issue_books where username='"+username+"'and from_date='"+from+"' and checkout=0;";
         	 rs=s.executeQuery(query );
         	 
@@ -230,6 +237,157 @@ public class OperateBooks {
 		}catch(Exception e)
 		{}
 	
+		return res;
+	}
+	
+	@GET
+	@Path("checkout")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public ResponseBean checkout(ArrayList<String> books, @QueryParam("username") String username )
+	{
+		ResponseBean res = new ResponseBean();
+		try {
+			
+			con = DriverManager.getConnection(dbUrl, props);
+			con.setAutoCommit(false);
+	        s = con.createStatement(); 
+	        Calendar cal = Calendar.getInstance();
+        	String from= cal.getTime().toString();
+        	String query="";
+	        for(int i=0;i<books.size();i++)
+	        {
+	        	query="update issue_books set checkout = 1 where id='"+books.get(i)+"' and from_date='"+
+	        			from+"';";
+	        	s.addBatch(query);
+	        }
+	        
+	        int a[] = s.executeBatch();
+	        
+	        if(a.length != books.size())
+	        {
+	        	res.setMessage("Sorry. Network Falied");
+	        	res.setStatus(400);
+	        	con.close();
+	        	return res;
+	        }
+	        con.commit();
+	        con.close();
+	        res.setMessage("Successfully checked out");
+	        res.setStatus(200);
+	        
+		}
+		catch(Exception e) {
+			res.setMessage(e.getMessage());
+        	res.setStatus(400);
+		}
+		
+		return res;
+	}
+	
+
+	@GET
+	@Path("returnBookDetails")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<ReturnBean> returnBookDetails( @QueryParam("username") String username)
+	{
+		ArrayList<ReturnBean> res=new ArrayList<>();
+		try {
+			
+			con = DriverManager.getConnection(dbUrl, props);
+	        s = con.createStatement(); 
+	        String query="select * from issue_books where return=0 and checkout=1 and username='"+username+"';";
+	        
+	        rs=s.executeQuery(query);
+	        while(rs.next())
+	        {
+	        	ReturnBean returnBean = new ReturnBean();
+	        	returnBean.setBook_id(rs.getString(4));
+	        	returnBean.setReturnDate(rs.getString(3));
+	        	returnBean.setIssueDate(rs.getString(2));
+	        	
+	        	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
+	        	
+	    		try {
+	    			Date returndate = dateFormat.parse(rs.getString(3));
+	    			int diffInDays = (int) ((returndate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+	    			int fine=0;
+	    			if(diffInDays < 0) {
+	    				fine= diffInDays * 10 * -1;
+	    			}
+	    			returnBean.setFine(fine);
+	    		} catch (ParseException e) {
+	    			// TODO Auto-generated catch block
+	    			e.printStackTrace();
+	    		}
+	        }
+	        
+	        for(int i=0;i<res.size();i++)
+	        {
+	        	query="select name from books where book_id='"+res.get(i).getBook_id()+"';";
+	        	res.get(i).setBook_name(rs.getString(1));
+	        }
+	        
+	        query="select fine from users where username='"+username+"';";
+	        rs=s.executeQuery(query);
+	        
+	        if(rs.next())
+	        {
+	        	for(int i=0;i<res.size();i++)
+	        		res.get(i).setPreviousFine(rs.getInt(1));
+	        }
+	        s.close();
+	        con.close();
+		}catch(Exception e) {
+			res.clear();
+		}
+		return res;
+	}
+	
+	@GET
+	@Path("returnBooks")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public ResponseBean returnBookDetails(ArrayList<ReturnBean> books, @QueryParam("username") String username)
+	{
+		ResponseBean res=new ResponseBean();
+		try {
+			con = DriverManager.getConnection(dbUrl, props);
+			con.setAutoCommit(false);
+	        s = con.createStatement(); 
+	        String query="";
+	        
+	        if(books.get(0).isFineRecieved())
+	        {
+	        	query="update users set fine=0 where username='"+username+"';";
+	        	s.addBatch(query);
+	        }
+	        for(int i=0;i<books.size();i++)
+	        {
+	        	query="update issue_books set return=1 where username='"+ username+"' and book_id='"+books.get(i).getBook_id()
+	        			+"' ";
+	        	s.addBatch(query);
+	        	query="update books set copies = copies + 1 where book_id='"+books.get(i).getBook_id()+"'";
+	        	s.addBatch(query);
+	        }
+	        
+	        int a[] = s.executeBatch();
+	        if(books.get(0).isFineRecieved())
+	        {
+	        	if(a.length < 2*books.size() +1)
+	        	{
+	        		res.setMessage("Error");
+	        		res.setStatus(400);
+	        		con.close();
+	        	}
+	        }
+	        res.setMessage("Return successful");
+	        res.setStatus(200);
+	        con.close();
+		}
+		catch(Exception e)
+		{}
+		
 		return res;
 	}
 
