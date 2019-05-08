@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -154,6 +155,7 @@ public class OperateBooks {
 	        		return res;
 	        	}
 	        	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
+	        	dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 	    		Date date = new Date();
 	    		Calendar to = Calendar.getInstance();
 	    		Calendar from = Calendar.getInstance();
