@@ -171,7 +171,7 @@ public class OperateBooks {
 	        		con.close();
 	        		return res;
 	        	}
-	        	res.setMessage("Book issued with details- Issue date:"+from.getTime()+" Return date:"+to.getTime() +" Please checkout at LRC gate");
+	        	res.setMessage("Book issued with details- Issue date:"+dateFormat.format(from.getTime())+" Return date:"+dateFormat.format(to.getTime()) +" Please checkout at LRC gate");
 	        	res.setStatus(200);
 	        	con.commit();
 	        	con.close();
