@@ -340,6 +340,12 @@ public class OperateBooks {
 	        {
 	        	for(int i=0;i<res.size();i++)
 	        		res.get(i).setPreviousFine(rs.getInt(1));
+	        	if(res.size()==0)
+	        	{
+	        		ReturnBean returnBean = new ReturnBean();
+	        		returnBean.setPreviousFine(rs.getInt(1));
+	        		res.add(returnBean);
+	        	}
 	        }
 	        s.close();
 	        con.close();
@@ -363,11 +369,6 @@ public class OperateBooks {
 	        s = con.createStatement(); 
 	        String query="";
 	        
-	        if(books.get(0).isFineRecieved())
-	        {
-	        	query="update users set fine=0 where username='"+username+"';";
-	        	s.addBatch(query);
-	        }
 	        for(int i=0;i<books.size();i++)
 	        {
 	        	query="update issue_books set return=1 where username='"+ username+"' and book_id='"+books.get(i).getBook_id()
