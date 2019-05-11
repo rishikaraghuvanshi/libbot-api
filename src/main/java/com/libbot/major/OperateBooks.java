@@ -312,7 +312,7 @@ public class OperateBooks {
 	        	
 	        	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
 	        	
-	    		try {
+	    		
 	    			Date returndate = dateFormat.parse(rs.getString(3));
 	    			int diffInDays = (int) ((returndate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 	    			int fine=0;
@@ -320,10 +320,7 @@ public class OperateBooks {
 	    				fine= diffInDays * 10 * -1;
 	    			}
 	    			returnBean.setFine(fine);
-	    		} catch (ParseException e) {
-	    			// TODO Auto-generated catch block
-	    			e.printStackTrace();
-	    		}
+	    		
 	        }
 	        
 	        for(int i=0;i<res.size();i++)
