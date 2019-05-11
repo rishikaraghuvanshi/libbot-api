@@ -247,7 +247,7 @@ public class OperateBooks {
 	@Path("checkout")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public ResponseBean checkout(ArrayList<String> books, @QueryParam("username") String username )
+	public ResponseBean checkout(ArrayList<BookBean> books, @QueryParam("username") String username )
 	{
 		ResponseBean res = new ResponseBean();
 		try {
@@ -261,11 +261,20 @@ public class OperateBooks {
         	String query="";
 	        for(int i=0;i<books.size();i++)
 	        {
-	        	query="update issue_books set checkout = 1 where username= '"+ username +"' and book_id='"+books.get(i)+"' and from_date='"+
+	        	query="update issue_books set checkout = 1 where username= '"+ username +"' and book_id='"+books.get(i).getBook_id()+"' and from_date='"+
 	        			from+"';";
-	        	s.executeQuery(query);
+	        	s.addBatch(query);
 	        }
 	        
+	        int a[] = s.executeBatch();
+	        
+	        if(a.length != books.size())
+	        {
+	        	res.setMessage("Sorry. Network Falied");
+	        	res.setStatus(400);
+	        	con.close();
+	        	return res;
+	        }
 	        con.commit();
 	        con.close();
 	        res.setMessage("Successfully checked out");
