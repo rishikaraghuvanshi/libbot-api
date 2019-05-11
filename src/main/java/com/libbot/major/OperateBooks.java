@@ -377,16 +377,8 @@ public class OperateBooks {
 	        	s.addBatch(query);
 	        }
 	        
-	        int a[] = s.executeBatch();
-	        if(books.get(0).isFineRecieved())
-	        {
-	        	if(a.length < 2*books.size() +1)
-	        	{
-	        		res.setMessage("Error");
-	        		res.setStatus(400);
-	        		con.close();
-	        	}
-	        }
+	        s.executeBatch();
+	       
 	        res.setMessage("Return successful");
 	        res.setStatus(200);
 	        con.close();
