@@ -263,18 +263,9 @@ public class OperateBooks {
 	        {
 	        	query="update issue_books set checkout = 1 where username= '"+ username +"' and book_id='"+books.get(i)+"' and from_date='"+
 	        			from+"';";
-	        	s.addBatch(query);
+	        	s.executeQuery(query);
 	        }
 	        
-	        int a[] = s.executeBatch();
-	        
-	        if(a.length != books.size())
-	        {
-	        	res.setMessage("Sorry. Network Falied");
-	        	res.setStatus(400);
-	        	con.close();
-	        	return res;
-	        }
 	        con.commit();
 	        con.close();
 	        res.setMessage("Successfully checked out");
