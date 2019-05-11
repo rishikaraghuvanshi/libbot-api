@@ -256,6 +256,8 @@ public class OperateBooks {
 			con.setAutoCommit(false);
 	        s = con.createStatement(); 
 	        Calendar cal = Calendar.getInstance();
+	        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
+	        dateFormat.format(cal.getTime());
         	String from= cal.getTime().toString();
         	String query="";
 	        for(int i=0;i<books.size();i++)
