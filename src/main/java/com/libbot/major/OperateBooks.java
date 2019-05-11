@@ -208,7 +208,7 @@ public class OperateBooks {
         	cal.setTime(new Date());
         	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
         	String from = dateFormat.format(cal.getTime());
-        	 String query = "select book_id from issue_books where username='"+username+"'and from_date='"+from+"' and checkout=0;";
+        	 String query = "select book_id from issue_books where username='"+username+"' and from_date='"+from+"' and checkout=0;";
         	 rs=s.executeQuery(query );
         	 
         	 while(rs.next())
@@ -309,7 +309,6 @@ public class OperateBooks {
 	        	returnBean.setBook_id(rs.getString(4));
 	        	returnBean.setReturnDate(rs.getString(3));
 	        	returnBean.setIssueDate(rs.getString(2));
-	        	
 	        	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyy");
 	        	
 	    		
@@ -320,7 +319,7 @@ public class OperateBooks {
 	    				fine= diffInDays * 10 * -1;
 	    			}
 	    			returnBean.setFine(fine);
-	    		
+	    		res.add(returnBean);
 	        }
 	        
 	        for(int i=0;i<res.size();i++)
@@ -340,7 +339,8 @@ public class OperateBooks {
 	        s.close();
 	        con.close();
 		}catch(Exception e) {
-			res.clear();
+			System.out.println(e.getMessage());
+			
 		}
 		return res;
 	}
