@@ -378,7 +378,7 @@ public class OperateBooks {
 	        }
 	        
 	        s.executeBatch();
-	       
+	        con.commit();
 	        res.setMessage("Return successful");
 	        res.setStatus(200);
 	        con.close();
