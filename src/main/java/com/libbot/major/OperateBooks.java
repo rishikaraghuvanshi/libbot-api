@@ -262,7 +262,7 @@ public class OperateBooks {
         	String query="";
 	        for(int i=0;i<books.size();i++)
 	        {
-	        	query="update issue_books set checkout = 1 where id='"+books.get(i)+"' and from_date='"+
+	        	query="update issue_books set checkout = 1 where username= '"+ username +"' and book_id='"+books.get(i)+"' and from_date='"+
 	        			from+"';";
 	        	s.addBatch(query);
 	        }
