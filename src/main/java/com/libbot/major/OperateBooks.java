@@ -371,9 +371,9 @@ public class OperateBooks {
 	        for(int i=0;i<books.size();i++)
 	        {
 	        	query="update issue_books set return=1 where username='"+ username+"' and book_id='"+books.get(i).getBook_id()
-	        			+"' ";
+	        			+"';";
 	        	s.addBatch(query);
-	        	query="update books set copies = copies + 1 where book_id='"+books.get(i).getBook_id()+"'";
+	        	query="update books set copies = copies + 1 where book_id='"+books.get(i).getBook_id()+"';";
 	        	s.addBatch(query);
 	        }
 	        
