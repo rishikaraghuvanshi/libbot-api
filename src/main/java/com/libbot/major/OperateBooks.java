@@ -273,7 +273,7 @@ public class OperateBooks {
 	        
 		}
 		catch(Exception e) {
-			res.setMessage(e.getStackTrace().toString());
+			res.setMessage(e.getMessage());
         	res.setStatus(400);
 		}
 		
