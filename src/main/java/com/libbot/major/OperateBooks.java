@@ -325,7 +325,12 @@ public class OperateBooks {
 	        for(int i=0;i<res.size();i++)
 	        {
 	        	query="select name from books where book_id='"+res.get(i).getBook_id()+"';";
-	        	res.get(i).setBook_name(rs.getString(1));
+	        	rs=s.executeQuery(query);
+		        
+		        if(rs.next())
+		        {
+		        	res.get(i).setBook_name(rs.getString(1));
+		        }
 	        }
 	        
 	        query="select fine from users where username='"+username+"';";
