@@ -303,6 +303,7 @@ public class OperateBooks {
 	        String query="select * from issue_books where return=0 and checkout=1 and username='"+username+"';";
 	        
 	        rs=s.executeQuery(query);
+	        int l=0;
 	        while(rs.next())
 	        {
 	        	ReturnBean returnBean = new ReturnBean();
@@ -320,8 +321,13 @@ public class OperateBooks {
 	    			}
 	    			returnBean.setFine(fine);
 	    		res.add(returnBean);
+	    		l++;
 	        }
-	        
+	        if(l==0) {
+	        	s.close();
+	        	con.close();
+	        	return res;
+	        }
 	        for(int i=0;i<res.size();i++)
 	        {
 	        	query="select name from books where book_id='"+res.get(i).getBook_id()+"';";
